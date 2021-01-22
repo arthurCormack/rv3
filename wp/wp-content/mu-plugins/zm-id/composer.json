@@ -1,0 +1,13 @@
+{
+    "name": "zm/zm_id",
+    "description": "A Class that works with a linke mu-plugin on wordpress sites to integrate with Zoomer ID",
+    "require": {
+        "lcobucci/jwt": "^3.1"
+    },
+    "authors": [
+        {
+            "name": "Arthur Cormack",
+            "email": "a.cormack@zoomermedia.ca"
+        }
+    ]
+}

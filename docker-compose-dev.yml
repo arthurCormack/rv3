@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./db:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: easytoguess
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: eveneasier
+    ports:
+      - "3306:3306"
+  
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:5.5-php7.4-apache
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    volumes:
+      - ./wp/wp-content:/var/www/html/wp-content
+      - ./wp/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: eveneasier
+      WORDPRESS_DB_NAME: wordpress
+      WP_DEBUG: 1
+      
+  nginx-proxy:
+    restart: unless-stopped
+    image: nginx:alpine
+    volumes:
+    - ./nginx/dev.conf:/etc/nginx/nginx.conf
+    
+    depends_on:
+      - spa
+      - wordpress
+    ports:
+      # - 443:443
+      - 80:80
+  
+  spa:
+    build:
+      context: ./spa
+      dockerfile: dev.Dockerfile
+    ports:
+      - "3000:3000"
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    
+    volumes:
+      - './spa:/usr/src/app'
+      - '/usr/src/app/node_modules'
+    restart: unless-stopped
