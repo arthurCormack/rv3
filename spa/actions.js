@@ -13,6 +13,14 @@ export const actionTypes = {
   PAGE_LOAD_STARTED: 'PAGE_LOAD_STARTED',
   PAGE_LOAD_SUCCESS: 'PAGE_LOAD_SUCCESS',
   PAGE_LOAD_FAILURE: 'PAGE_LOAD_FAILURE',
+
+
+  GENERAL_CONTENT_LOAD_TRIGGER: 'GENERAL_CONTENT_LOAD_TRIGGER',
+  GENERAL_CONTENT_LOAD_STARTED: 'GENERAL_CONTENT_LOAD_STARTED',
+  GENERAL_CONTENT_LOAD_SUCCESS: 'GENERAL_CONTENT_LOAD_SUCCESS',
+  GENERAL_CONTENT_LOAD_FAILURE: 'GENERAL_CONTENT_LOAD_FAILURE',
+
+
   HYDRATE: 'HYDRATE',
 };
 
@@ -40,6 +48,30 @@ export function pageLoadSuccess(data) {
 export function pageLoadFailure(error) {
   return {
     type: actionTypes.PAGE_LOAD_FAILURE,
+    error,
+  }
+}
+
+// generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure
+export function generalContentLoadTrigger() {
+  return {
+    type: actionTypes.GENERAL_CONTENT_LOAD_TRIGGER,
+  }
+}
+export function generalContentLoadStarted() {
+  return {
+    type: actionTypes.GENERAL_CONTENT_LOAD_STARTED,
+  }
+}
+export function generalContentLoadSuccess(data) {
+  return {
+    type: actionTypes.GENERAL_CONTENT_LOAD_SUCCESS,
+    data,
+  }
+}
+export function generalContentLoadFailure(error) {
+  return {
+    type: actionTypes.GENERAL_CONTENT_LOAD_FAILURE,
     error,
   }
 }
