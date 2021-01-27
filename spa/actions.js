@@ -20,6 +20,11 @@ export const actionTypes = {
   GENERAL_CONTENT_LOAD_SUCCESS: 'GENERAL_CONTENT_LOAD_SUCCESS',
   GENERAL_CONTENT_LOAD_FAILURE: 'GENERAL_CONTENT_LOAD_FAILURE',
 
+  POSTSTACK_LOADNEXTPOST_TRIGGER: 'POSTSTACK_LOADNEXTPOST_TRIGGER',
+  POSTSTACK_LOADNEXTPOST_STARTED: 'POSTSTACK_LOADNEXTPOST_STARTED',
+  POSTSTACK_LOADNEXTPOST_SUCCESS: 'POSTSTACK_LOADNEXTPOST_SUCCESS',
+  POSTSTACK_LOADNEXTPOST_FAILURE: 'POSTSTACK_LOADNEXTPOST_FAILURE',
+
 
   HYDRATE: 'HYDRATE',
 };
@@ -53,9 +58,12 @@ export function pageLoadFailure(error) {
 }
 
 // generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure
-export function generalContentLoadTrigger() {
+// generalContentLoadTrigger
+export function generalContentLoadTrigger(route) {
+  console.log('inside the generalContentLoadTrigger action ...');
   return {
     type: actionTypes.GENERAL_CONTENT_LOAD_TRIGGER,
+    route
   }
 }
 export function generalContentLoadStarted() {
@@ -75,7 +83,7 @@ export function generalContentLoadFailure(error) {
     error,
   }
 }
-
+// generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure
 export function failure(error) {
   return {
     type: actionTypes.FAILURE,

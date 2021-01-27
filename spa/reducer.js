@@ -1,7 +1,7 @@
 import { actionTypes } from './actions';
 import { HYDRATE } from 'next-redux-wrapper';
 
-const initialState = {
+export const initialState = {
   count: 0,
   error: false,
   lastUpdate: 0,
@@ -11,14 +11,14 @@ const initialState = {
   contents: { 
 
     loading: false,
-    nextItemBeingLoaded: false, 
+    nextContentInstanceIDBeingLoaded: false, 
     error: false, 
     transitionState: null, 
     
     
     currentContentInstanceID: false,// false, if there is no currentContentInstanceID, and then a string (item's permalink)
     contentInstances: {
-
+      
     },
     // uh no. because what if the item is a continuous scrolling thing? then we have a stack of things.
     // so ... types are: single-post, 'post-stack' (for continuous scrolling), 'page', 'category', 'tag' (categories and tags are essentially the same), ... and other custom post types 
