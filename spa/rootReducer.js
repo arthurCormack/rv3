@@ -1,5 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { actionTypes } from './actions';
+import { contentsReducer, initialContentsState } from './reducers';// all content loaded from the general content load lives here.
+
 
 // COUNTER REDUCER
 const counterReducer = (state = 0, { type }) => {
@@ -34,13 +36,25 @@ const timerReducer = (state = initialTimerState, { type, payload }) => {
   }
 }
 
+
+
+export const initialState = {
+  counter: 0,
+  timer: initialTimerState,
+  contents: initialContentsState,
+};
+
 export const rootReducer = combineReducers({
   counter: counterReducer,
   timer: timerReducer,
 });
+
+// what reducers / state do we want to have be present all the time, and what things do we want to have 'injected' dynamically?
+// the general 'content' slice, is so intrinsic to this particular application - all of it's stuff
 export default function createReducer(injectedReducers) {
   return combineReducers({
     global: rootReducer,
+    contents: contentsReducer,
     ...injectedReducers,
   });
 }

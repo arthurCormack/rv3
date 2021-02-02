@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useRouter } from 'next/router';
 import { useInjectReducer, useInjectSaga } from 'redux-injectors';
-import { postRootSaga } from '../sagas';
+import { contentsReducer as reducer} from '../reducers';
+import { loadGeneralContentSaga as saga} from '../sagas'; 
 
 const key = 'content';
 
@@ -16,13 +17,13 @@ import {
 } from '../actions';
 
 import { createStructuredSelector } from 'reselect';
-import { makeSelectCurrentContentInstanceID, makeSelectLoading, makeSelectNextContentInstanceIDBeingLoaded } from 'selectors';
-// generalContentLoadTrigger
+import { makeSelectCurrentContentInstanceID, makeSelectContentLoading, makeSelectNextContentInstanceIDBeingLoaded } from 'selectors';
+// // generalContentLoadTrigger
 
 import ursula_akbar from 'images/ursula_akbar.jpg';// there does not appear to be an image loader built in to next.
-import Page from '../components/page';
+// import Page from '../components/page';
 
-import { loadGeneralContentSaga as saga} from 'sagas'; 
+
 
 import Head from 'next/head';
 // import Image from 'next/image';
@@ -50,11 +51,11 @@ import Img from 'react-optimized-image';
 // another thing we could do to mitigate CLS is measuring the heights of tings in the stack, and remembering them ( remeber to reset on resize),
 // and making the containers maintain that previously calculated height.
 
-// const stateSelector = createStructuredSelector({
-//   currentContentInstanceID: makeSelectCurrentContentInstanceID(),
-//   loading: makeSelectLoading(), 
-//   nextContentInstanceIDBeingLoaded: makeSelectNextContentInstanceIDBeingLoaded()
-// });
+const stateSelector = createStructuredSelector({
+  currentContentInstanceID: makeSelectCurrentContentInstanceID(),
+  loading: makeSelectContentLoading(), 
+  nextContentInstanceIDBeingLoaded: makeSelectNextContentInstanceIDBeingLoaded()
+});
 
 const AllRoutes = () => {
   const dispatch = useDispatch();
@@ -65,10 +66,10 @@ const AllRoutes = () => {
   const routeSlugs = router.query.slug;
 
   // const content = useSelector((state) => state.content);
-  // const { currentContentInstanceID, loading, nextContentInstanceIDBeingLoaded } = useSelector(stateSelector);
-
+  const { currentContentInstanceID, loading, nextContentInstanceIDBeingLoaded } = useSelector(stateSelector);
+  console.log('AllRoutes()');
   // useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga })
+  useInjectSaga({ key, saga });
 
   useEffect(() => {
     // if we don't have the data that we are supposed to have.
@@ -93,9 +94,9 @@ const AllRoutes = () => {
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      {/* <Img src={ursula_akbar} alt="Ursula and Akbar, together at last" />
-      <Img src={ursula_akbar} alt="Ursula and Akbar, together at last" type="thumbnail" />
-       */}
+      <Img src={ursula_akbar} alt="Ursula and Akbar, together at last" />
+      {/* <Img src={ursula_akbar} alt="Ursula and Akbar, together at last" type="thumbnail" /> */}
+      
       {/* <Img
         src={ursula_akbar}
         alt="Picture of the author"
@@ -170,7 +171,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
   console.log('store.getState()', store.getState());
   // console.log('store.getState()()', store.getState();
   // it seems that thhis is happening, before the store has had a chance to be created.
-  if (!store.getState().contents.currentContentInstanceID) {// this will be false initially
+  if (!store.getState().contents || !store.getState().contents.currentContentInstanceID) {// this will be false initially
     //
     console.log('just b4 generalContentLoadTrigger ...');
     store.dispatch(generalContentLoadTrigger(query));// this is a trigger; a saga takes it and then loads data from an api endpoint using it.

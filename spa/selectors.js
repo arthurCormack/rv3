@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { initialState } from './reducer';
+import { initialState } from './rootReducer';
 
 const selectContents = state => state.contents || initialState;
 
@@ -12,7 +12,7 @@ const makeSelectCurrentContentInstanceID = () =>
     }
   );
 
-const makeSelectLoading = () =>
+const makeSelectContentLoading = () =>
   createSelector(
     selectContents,
     (contents) => {
@@ -30,7 +30,8 @@ const makeSelectNextContentInstanceIDBeingLoaded = () =>
 
 export {
   makeSelectCurrentContentInstanceID,
-  makeSelectLoading,
+  makeSelectContentLoading,
   makeSelectNextContentInstanceIDBeingLoaded, 
 };
 // const makeSelectCurrentContentInstanceID
+
