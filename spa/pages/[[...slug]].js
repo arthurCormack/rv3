@@ -2,8 +2,14 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { useRouter } from 'next/router';
+import { useInjectReducer, useInjectSaga } from 'redux-injectors';
+import { postRootSaga } from '../sagas';
+
+const key = 'content';
+
 import { END } from 'redux-saga';
 import { wrapper } from '../store';
+
 import { 
   pageLoadTrigger, pageLoadStarted, pageLoadSuccess, pageLoadFailure, 
   generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure 
@@ -16,7 +22,7 @@ import { makeSelectCurrentContentInstanceID, makeSelectLoading, makeSelectNextCo
 import ursula_akbar from 'images/ursula_akbar.jpg';// there does not appear to be an image loader built in to next.
 import Page from '../components/page';
 
-import { loadGeneralContentSaga } from 'sagas'; 
+import { loadGeneralContentSaga as saga} from 'sagas'; 
 
 import Head from 'next/head';
 // import Image from 'next/image';
@@ -44,11 +50,11 @@ import Img from 'react-optimized-image';
 // another thing we could do to mitigate CLS is measuring the heights of tings in the stack, and remembering them ( remeber to reset on resize),
 // and making the containers maintain that previously calculated height.
 
-const stateSelector = createStructuredSelector({
-  currentContentInstanceID: makeSelectCurrentContentInstanceID(),
-  loading: makeSelectLoading(), 
-  nextContentInstanceIDBeingLoaded: makeSelectNextContentInstanceIDBeingLoaded()
-});
+// const stateSelector = createStructuredSelector({
+//   currentContentInstanceID: makeSelectCurrentContentInstanceID(),
+//   loading: makeSelectLoading(), 
+//   nextContentInstanceIDBeingLoaded: makeSelectNextContentInstanceIDBeingLoaded()
+// });
 
 const AllRoutes = () => {
   const dispatch = useDispatch();
@@ -59,7 +65,10 @@ const AllRoutes = () => {
   const routeSlugs = router.query.slug;
 
   // const content = useSelector((state) => state.content);
-  const { currentContentInstanceID, loading, nextContentInstanceIDBeingLoaded } = useSelector(stateSelector);
+  // const { currentContentInstanceID, loading, nextContentInstanceIDBeingLoaded } = useSelector(stateSelector);
+
+  // useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga })
 
   useEffect(() => {
     // if we don't have the data that we are supposed to have.
