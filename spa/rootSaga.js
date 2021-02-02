@@ -1,5 +1,5 @@
 import { all, call, delay, put, take, takeLatest } from 'redux-saga/effects'
-import { SIMPLE_TEST } from './types'
+import { actionTypes } from './actions'
 
 
 function* simpleTestSaga() {
@@ -17,8 +17,7 @@ function* rootSaga() {
   
   yield all([
     // call(runClockSaga),
-    
-    takeLatest(SIMPLE_TEST, simpleTestSaga),
+    takeLatest(actionTypes.SIMPLE_TEST, simpleTestSaga),
   ])
 }
 

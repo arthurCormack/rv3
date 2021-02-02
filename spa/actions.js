@@ -1,4 +1,10 @@
-import * as types from './types'
+export const actionTypes = { 
+  TICK: 'TICK', 
+  INCREMENT: 'INCREMENT', 
+  DECREMENT: 'DECREMENT', 
+  RESET: 'RESET', 
+  SIMPLE_TEST: 'SIMPLE_TEST'
+}
 
 // INITIALIZES CLOCK ON SERVER
 export const serverRenderClock = () => (dispatch) =>
@@ -14,16 +20,16 @@ export const startClock = () => (dispatch) =>
   }, 1000)
 
 // INCREMENT COUNTER BY 1
-export const incrementCount = () => ({ type: types.INCREMENT })
+export const incrementCount = () => ({ type: actionTypes.INCREMENT })
 
 // DECREMENT COUNTER BY 1
-export const decrementCount = () => ({ type: types.DECREMENT })
+export const decrementCount = () => ({ type: actionTypes.DECREMENT })
 
 // RESET COUNTER
-export const resetCount = () => ({ type: types.RESET })
+export const resetCount = () => ({ type: actionTypes.RESET })
 
 
 
 export function simpleTest() {
-  return { type: types.SIMPLE_TEST }
+  return { type: actionTypes.SIMPLE_TEST }
 }
