@@ -1,15 +1,16 @@
-import { useSelector } from 'react-redux'
+const pad = (n) => (n < 10 ? `0${n}` : n)
 
-const formatTime = (time) => {
-  return new Date(time).toJSON().slice(11, 19)
+const format = (t) => {
+  const hours = t.getUTCHours()
+  const minutes = t.getUTCMinutes()
+  const seconds = t.getUTCSeconds()
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`
 }
 
-const Clock = () => {
-  const lastUpdate = useSelector((state) => state.timer.lastUpdate)
-  const light = useSelector((state) => state.timer.light)
+function Clock({ lastUpdate, light }) {
   return (
     <div className={light ? 'light' : ''}>
-      {formatTime(lastUpdate)}
+      {format(new Date(lastUpdate))}
       <style jsx>{`
         div {
           padding: 15px;
@@ -18,7 +19,6 @@ const Clock = () => {
           font: 50px menlo, monaco, monospace;
           background-color: #000;
         }
-
         .light {
           background-color: #999;
         }

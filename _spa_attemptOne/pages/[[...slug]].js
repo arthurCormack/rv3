@@ -157,8 +157,11 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
   // console.log('determination', determination);
   // loading data on the client side can be accomplished via diispatching a trigger action inside useEffect.
   // can we use the redux-injectors here?
-  // 
+  console.log('store.getState()', store.getState());
+  // console.log('store.getState()()', store.getState();
+  // it seems that thhis is happening, before the store has had a chance to be created.
   if (!store.getState().contents.currentContentInstanceID) {// this will be false initially
+    //
     console.log('just b4 generalContentLoadTrigger ...');
     store.dispatch(generalContentLoadTrigger(query));// this is a trigger; a saga takes it and then loads data from an api endpoint using it.
     store.dispatch(END);
