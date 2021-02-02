@@ -20,7 +20,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) =
 
   if (!store.getState().placeholderData) {
     store.dispatch(loadData())
-    store.dispatch(END)
+      
   }
 
   await store.sagaTask.toPromise()
