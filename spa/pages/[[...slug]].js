@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { useRouter } from 'next/router';
-import { useInjectReducer, useInjectSaga } from 'redux-injectors';
+// import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { contentsReducer as reducer} from '../reducers';
-import { loadGeneralContentSaga as saga} from '../sagas'; 
+// import { generalContentSaga as saga} from "../sagas";
 
 const key = 'content';
 
@@ -12,7 +12,7 @@ import { END } from 'redux-saga';
 import { wrapper } from '../store';
 
 import { 
-  pageLoadTrigger, pageLoadStarted, pageLoadSuccess, pageLoadFailure, 
+  pageLoadTrigger, pageLoadStarted, pageLoadSuccess, pageLoadFailure, simpleTest,
   generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure 
 } from '../actions';
 
@@ -69,7 +69,7 @@ const AllRoutes = () => {
   const { currentContentInstanceID, loading, nextContentInstanceIDBeingLoaded } = useSelector(stateSelector);
   console.log('AllRoutes()');
   // useInjectReducer({ key, reducer });
-  useInjectSaga({ key, saga });
+  // useInjectSaga({ key, saga });
 
   useEffect(() => {
     // if we don't have the data that we are supposed to have.
@@ -112,6 +112,7 @@ ddevup
 }
 
 export function detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(slugs) {
+  console.log('detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis', slugs);
   // the name of the function sort of says it all.
   // this will return the requestURL and the typeOfThing that has been determined by anaylysis of the permalink
   // returns { requestURL, typeOfTHing }
@@ -168,13 +169,14 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
   // console.log('determination', determination);
   // loading data on the client side can be accomplished via diispatching a trigger action inside useEffect.
   // can we use the redux-injectors here?
-  console.log('store.getState()', store.getState());
+  // console.log('store.getState()', store.getState());
   // console.log('store.getState()()', store.getState();
   // it seems that thhis is happening, before the store has had a chance to be created.
   if (!store.getState().contents || !store.getState().contents.currentContentInstanceID) {// this will be false initially
     //
     console.log('just b4 generalContentLoadTrigger ...');
     store.dispatch(generalContentLoadTrigger(query));// this is a trigger; a saga takes it and then loads data from an api endpoint using it.
+    // store.dispatch(simpleTest());
     store.dispatch(END);
   }
 

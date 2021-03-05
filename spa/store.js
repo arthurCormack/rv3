@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { createStore, applyMiddleware, compose } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import { createInjectorsEnhancer, forceReducerReload } from 'redux-injectors';
-import thunkMiddleware from 'redux-thunk'
+// import thunkMiddleware from 'redux-thunk'
 import createSagaMiddleware from 'redux-saga';
 import { createWrapper } from 'next-redux-wrapper'
 import rootSaga from './rootSaga';
@@ -20,7 +20,7 @@ function initStore(initialState) {
 
   const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
   const { run: runSaga } = sagaMiddleware;
-  const middlewarez = [thunkMiddleware, sagaMiddleware];
+  const middlewarez = [sagaMiddleware];
 
 
   const enhancers = [
