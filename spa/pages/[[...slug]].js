@@ -104,36 +104,38 @@ const AllRoutes = () => {
         height={500}
       /> */}
 
-      This is the AllRoutes
+      This is the special AllRoutes
 ddevup
 
     </div>
   );
 }
 
-export function detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(slugs) {
-  console.log('detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis', slugs);
-  // the name of the function sort of says it all.
-  // this will return the requestURL and the typeOfThing that has been determined by anaylysis of the permalink
-  // returns { requestURL, typeOfTHing }
-  // and then typeOfThing will determine what components to use to render the results
-  if ([1,2,3].includes(slugs.length ) ) {
-    console.log('this would be a special page, or an archive (a category or a tag)');// 
-    // do we want to do the determiniation here? since we will have to do the same determiniation, on clinet side. better to abstract out into a reusable function. 
-    // determine what kind of thing it is, based on the permalink
-    // then call the api for the content for that route.
-    // alternatively, we could just call the api endpoint, and let it determiine what kind of thing it is, and then respond accordingly.
-    // we want to be able to make some opinionated guesses initially about what kind of thing it is iniitially. 
-    // if there are special pages ... where there is a total custom layout, then we could do that here.
-    if (slugs[0] === 'tag') {
-      return { expectedContentType: 'tag'}; 
-    }
-    return { expectedContentType: 'category'};
-  } else if ([5,6,7].includes(slugs.length)) {
-    console.log('this looks like a single dated post');
-    return { expectedContentType: 'post'};
-  }
-}
+// export function detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(slugs) {
+//   console.log('detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis', slugs);
+//   // the name of the function sort of says it all.
+//   // this will return the requestURL and the typeOfThing that has been determined by anaylysis of the permalink
+//   // returns { requestURL, typeOfTHing }
+//   // and then typeOfThing will determine what components to use to render the results
+//   if (slugs.length === 0)  {
+
+//   } else if ([1,2,3].includes(slugs.length ) ) {
+//     console.log('this would be a special page, or an archive (a category or a tag)');// 
+//     // do we want to do the determiniation here? since we will have to do the same determiniation, on clinet side. better to abstract out into a reusable function. 
+//     // determine what kind of thing it is, based on the permalink
+//     // then call the api for the content for that route.
+//     // alternatively, we could just call the api endpoint, and let it determiine what kind of thing it is, and then respond accordingly.
+//     // we want to be able to make some opinionated guesses initially about what kind of thing it is iniitially. 
+//     // if there are special pages ... where there is a total custom layout, then we could do that here.
+//     if (slugs[0] === 'tag') {
+//       return { expectedContentType: 'tag'}; 
+//     }
+//     return { expectedContentType: 'category'};
+//   } else if ([5,6,7].includes(slugs.length)) {
+//     console.log('this looks like a single dated post');
+//     return { expectedContentType: 'post'};
+//   }
+// }
 
 
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req, res, query }) => {

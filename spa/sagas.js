@@ -1,7 +1,7 @@
 import { all, call, delay, put, take, select, takeLatest } from 'redux-saga/effects';
 import { actionTypes, generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure } from './actions';
 import { makeSelectCurrentContentInstanceID, makeSelectContentLoading, makeSelectNextContentInstanceIDBeingLoaded } from 'selectors';
-import { APICALLURL_GETFIRSTDATEDPOST } from './constants';
+import { APICALLURL_GETFIRSTDATEDPOST, APICALLURL_GETGENERALCONTENT } from './constants';
 
 import { isServer } from 'utils/detection';
 import request from 'utils/request';
@@ -17,7 +17,7 @@ function* detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(route) {
   // and then typeOfThing will determine what components to use to render the results
   if (slugs.length === 0) {
     // then we have the home page.
-    return { expectedContentType: 'home'}; 
+    return { expectedContentType: 'home', requestURL: APICALLURL_GETGENERALCONTENT }; 
   } else if ([1,2,3].includes(slugs.length ) ) {
     console.log('this would be a special page, or an archive (a category or a tag)');// 
     // do we want to do the determiniation here? since we will have to do the same determiniation, on clinet side. better to abstract out into a reusable function. 
@@ -82,9 +82,11 @@ export function* loadGeneralContentSaga(action) {
     // then just load the thing.
     console.log('');
     if (!!thing.requestURL) {
+      console.log('thing.requestURL', thing.requestURL);
       yield put(generalContentLoadStarted(permalinkID));// this is the key
       try {
         const caard = yield call(request, thing.requestURL);// caard with one d == content authority api response data
+        console.log('caard', caard);
         yield put(generalContentLoadSuccess(caard));
 
       } catch (e) {
