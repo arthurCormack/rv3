@@ -22,9 +22,9 @@ export function contentsReducer (state = initialContentsState, action) {
       break;
     case actionTypes.GENERAL_CONTENT_LOAD_SUCCESS:
       //
-      const actualPermalinkOfContentFromCA = action.data.resultItem.permalink;
+      const actualPermalinkOfContentFromCA = action.data.resultItem.permalink;// expected data shape: { resultItem: { permalink: ~ }, ads, nextItem } ... this always needs to be the case. The API must respond with that stuff always.
       let someContentInstances = state.contentInstances;
-      someContentInstances[actualPermalinkOfContentFromCA] = action.data;
+      someContentInstances[actualPermalinkOfContentFromCA] = action.data;// uses the permalink of the item as the key in the array. We know that this will be unique for each item of content.
       return {
         ...state,
         ...{ loading: false, error: false, contentInstances: someContentInstances },

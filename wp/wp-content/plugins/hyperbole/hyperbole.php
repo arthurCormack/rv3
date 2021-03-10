@@ -21,6 +21,7 @@ define( 'HYPERBOLE__MINIMUM_WP_VERSION', '4.0' );
 define( 'HYPERBOLE__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
 
+require_once( HYPERBOLE__PLUGIN_DIR . 'includes/redirections.php'); // defines getRedirectForURL
 require_once( HYPERBOLE__PLUGIN_DIR . 'includes/thumbnails.php');
 require_once( HYPERBOLE__PLUGIN_DIR . 'includes/guess404Permalink.php');
 require_once( HYPERBOLE__PLUGIN_DIR . 'includes/hyperbole_excerpt.php');
@@ -30,11 +31,15 @@ require_once( HYPERBOLE__PLUGIN_DIR . 'includes/acf_image_local_avatar.php');
 
 
 // import all of the endpoints
-$endpointPath =  HYPERBOLE__PLUGIN_DIR . 'includes/endpoints';
+$endpointPath = HYPERBOLE__PLUGIN_DIR . 'includes/endpoints';
 foreach(glob("{$endpointPath}/*.php") as $file){
-    require_once $file;
+  require_once $file;
 }
-
+// import all the content handlers
+$contentHandlerPath = HYPERBOLE__PLUGIN_DIR . 'includes/contenthandlers';
+foreach(glob("{$contentHandlerPath}/*.php") as $file){
+  require_once $file;
+}
 
 // register_rest_route( 'wpse/v1', '/post_by_permalink/(?P<path>[\S]+)',
 add_action( "rest_api_init", function () {
@@ -165,4 +170,39 @@ function episodes_attributes_meta_box($post) {
       if ( ! empty($pages) ) {
           echo $pages;
       } // end empty pages check
+}
+
+
+
+function guess_404_permalink($someSlug) {
+	global $wpdb;
+	if ($someSlug) {
+		$where = $wpdb->prepare("post_name LIKE %s", $wpdb->esc_like($someSlug) . '%');
+
+		// if any of post_type, year, monthnum, or day are set, use them to refine the query
+		// if ( get_query_var('post_type') )
+		//         $where .= $wpdb->prepare(" AND post_type = %s", get_query_var('post_type'));
+		// else
+		//         $where .= " AND post_type IN ('" . implode( "', '", get_post_types( array( 'public' => true ) ) ) . "')";
+		//
+		// if ( get_query_var('year') )
+		//         $where .= $wpdb->prepare(" AND YEAR(post_date) = %d", get_query_var('year'));
+		// if ( get_query_var('monthnum') )
+		//         $where .= $wpdb->prepare(" AND MONTH(post_date) = %d", get_query_var('monthnum'));
+		// if ( get_query_var('day') )
+		//         $where .= $wpdb->prepare(" AND DAYOFMONTH(post_date) = %d", get_query_var('day'));
+
+		$post_id = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE $where AND post_status = 'publish'");
+		if (!$post_id)
+			return false;
+		// if ( get_query_var( 'feed' ) )
+		//         return get_post_comments_feed_link( $post_id, get_query_var( 'feed' ) );
+		// elseif ( get_query_var( 'page' ) && 1 < get_query_var( 'page' ) )
+		//         return trailingslashit( get_permalink( $post_id ) ) . user_trailingslashit( get_query_var( 'page' ), 'single_paged' );
+		else
+			// return get_permalink( $post_id );
+			return str_replace(home_url(), "", get_permalink($post_id)); // gives us a relative url!
+	}
+
+	return false;
 }

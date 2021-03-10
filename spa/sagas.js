@@ -26,10 +26,15 @@ function* detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(route) {
     // alternatively, we could just call the api endpoint, and let it determiine what kind of thing it is, and then respond accordingly.
     // we want to be able to make some opinionated guesses initially about what kind of thing it is iniitially. 
     // if there are special pages ... where there is a total custom layout, then we could do that here.
+    // encodeURIComponent does not work on a path component in a url. %20 like characters break the routing in php and result in 404 not founds.
+    // 
+    
     if (slugs[0] === 'tag') {
-      return { expectedContentType: 'tag'}; 
+      return { expectedContentType: 'tag', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`}; 
     }
-    return { expectedContentType: 'category'};
+    
+    return { expectedContentType: 'category', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`};
+    // 
   } else if ([5,6,7].includes(slugs.length)) {
     console.log('this looks like a single dated post');
     return { expectedContentType: 'post', requestURL: APICALLURL_GETFIRSTDATEDPOST };
