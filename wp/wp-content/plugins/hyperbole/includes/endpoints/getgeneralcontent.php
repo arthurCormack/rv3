@@ -90,7 +90,7 @@ function getgeneralcontent($request) {
     // actually, let's first chheck to see if there is a redirect first.
     // and then see if it is a page.
     // and if not a page, then check to see if it is an archive.
-    if ($slugCount >= 1) {
+    if ($slugCount >= 1) { 
       // then it could be a category or a tag ... or something special. like a book club post or someting like that.
       $firstSlug = $permalinkSlugs[0];
       if($firstSlug === 'tag' || $firstSlug === 'tags') {
