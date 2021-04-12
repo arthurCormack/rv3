@@ -1,6 +1,6 @@
 <?php
   //
-  function get_category($slugPath) {
+  function hyperbole_get_category($slugPath) {
     // use get_category_by_path. https://developer.wordpress.org/reference/functions/get_category_by_path/
     // $slugPath could be  something like health of a hierarchical path like /health/diets/ketogenic of /money/investing/bitcoin
     // 

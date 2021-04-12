@@ -14,6 +14,8 @@ function getgeneralcontent($request) {
 
   $permalinkSlugs = explode('/', $permalink);
   $slugCount = count($permalinkSlugs);
+
+  
   // $responseObj->slugCount = $slugCount;
   // the number of slugs gives use the first clue.
   // it's the same opiniionated guesses thhat occur at the client. BUt then if a result is not found, based on guess, then we make 
@@ -39,10 +41,13 @@ function getgeneralcontent($request) {
 
   // if the permalink slugs is [] ... then it is the home page. and what do we return there?
   // a bunch of little buckets. but initially, on the SSR, just the featured four ... or enough to create the first meaningful render.
-  if ($slugCount === 0) {
+  if ($slugCount === 0 || ($slugCount === 1 && $permalinkSlugs[0] === '')) {
     // then we are dealing with the home  page
     // then what part of the home page's assorment of content are we requesting? the initial ssr load, or other specific buckets?
     // do we want to get them all at once? or as part of a collection?
+    $someHomePage = hyperbole_get_singlepage('home');// assume that there is always a home page with slug 'home'
+    return $someHomePage;
+
   } else {
     // is there a redirect? getRedirectForURL is defined in redirections.php
     // this will take care of all redirections for all possible kinds of content!
@@ -59,13 +64,13 @@ function getgeneralcontent($request) {
       // it could be a page or a category
       $singleSlug = $permalinkSlugs[0];
       // look for page first
-      $somePossiblePage = get_singlepage($singleSlug);
+      $somePossiblePage = hyperbole_get_singlepage($singleSlug);
       if ($somePossiblePage) {
         return $somePossiblePage;
       }
       // then category
       // but we might want to be making a 
-      $somePossibleCategory = get_category($singleSlug);
+      $somePossibleCategory = hyperbole_get_category($singleSlug);
       if ($somePossibleCategory) {
         return $somePossibleCategory;
       }
@@ -103,31 +108,32 @@ function getgeneralcontent($request) {
         // things like pages
         if ($slugCount >= 1 && $slugCount <= 3) {
           // the assumption is that it is a hierarchical category page.
-          $somePossibleCategory = get_category($permalink);// we use the whole permalink, not just a part of the url path. there mightbe duplicate parts. for example, /recipes/christmas and /holidays/christmas would both have the same slug christmas
+          $somePossibleCategory = hyperbole_get_category($permalink);// we use the whole permalink, not just a part of the url path. there mightbe duplicate parts. for example, /recipes/christmas and /holidays/christmas would both have the same slug christmas
           if ($somePossibleCategory) {
             return $somePossibleCategory;
           }
           // then best guess or nothing
           $response = new stdClass;
           $response->notFound = true;
-          $response->redirectLocation = guess_404_permalink($singleSlug); // something, or false
+          $response->redirectLocation = guess_404_permalink($permalink); // something, or false
           return $response;
         } else {
           // we assume that  we are dealing with a specific post here instead.
-          // get_singlepage
-          $somePossibleSinglePage = get_singlepage($permalink);
+          // hyperbole_get_singlepage
+          $somePossibleSinglePage = hyperbole_get_singlepage($permalink);
           if ($somePossibleSinglePage) {
             return $somePossibleSinglePage;
           }
           // then best guess or nothing
           $response = new stdClass;
           $response->notFound = true;
-          $response->redirectLocation = guess_404_permalink($singleSlug);// something, or false
+          $response->redirectLocation = guess_404_permalink($permalink);// something, or false
+          return $response;
         }
       }
     }
   }
-  return $responseObj;
+  return false;// we shoud not ever get here
 }
 // function getgeneralcontent($request) {
   

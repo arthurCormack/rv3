@@ -1,11 +1,25 @@
 <?php
 
-function get_singlepage($slug) {
+function hyperbole_get_homepage() {
 
-  $somePage = get_page_by_path($slug);
+  $somePage = get_page_by_path('home');
   if ($somePage=== null) {
     return false;
   }
+  // but we want to consider more than returning just a page.
+  // the homepage has a special assortment of data
+  // the data that is essential for a serverside render of the home page
+  // other, non-1st-load-essential portions of the homepage content can be loaded by subsequent api calls from the client.
+  // we need to know, what is essential before hand. This has to be opinionated.
+  // let's say that there are fields that pertain to meta keywords, ogtags, and the Name, description, etc, and that All that stuff is content-editor controlled
+  // and then furthermore, let's say that there are 5 pieces of content on the home page: The Featured Four, and optionally, a Hero Spot. 
+  
+  // no - we don't return somepage! for a route handler ... that lives at a specific url, always 
+  // always a resultItem
+  // with a     .permalink
+  // or a resultItemSet ...
+  // at a particular route, a respponse for that route is either a responseItem, or a responseItemSet.
+  
   return $somePage;// this is just a start. probably, we will want to return a bunch of other things about the page, such as ads, and so on.
   
 	// $somePageSlug = $data['pageslug'];

@@ -119,6 +119,35 @@ function my_acf_init() {
 
 add_action('acf/init', 'my_acf_init');
 
+
+// only published stuff appears in ACF relationship fields, otherwise it becomes quite unweildy, quickly
+function zm_relationship_options_filter($options, $field, $the_post) {
+	$options['post_status'] = array('publish');
+	return $options;
+}
+function zm_relationship_restrictToTaxonomyTerm_options_filter($options, $field, $the_post){
+	$options['post_status'] = array('publish');
+	return $options;
+}
+add_filter('acf/fields/relationship/query/name=todays_featured', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=friends_of_the_new_classical', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=featured_concerts', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=slides', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=community_spotlights', 'zm_relationship_options_filter', 10, 3);
+//ez2_hero_posts
+add_filter('acf/fields/relationship/query/name=ez2_hero_posts', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_featured_four', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_single_featured', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_trending_posts', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_single_featured_inset', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_hot_topics', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_first_featured_bin', 'zm_relationship_options_filter', 10, 3);
+add_filter('acf/fields/relationship/query/name=ez2_featured_category_or_tag_items', 'zm_relationship_restrictToTaxonomyTerm_options_filter', 10, 3);
+
+
+
+
+
 // -->> Wp Cache 
 // add_filter( 'rest_cache_headers', function( $headers ) {
 //  $headers['Cache-Control'] = 'public, max-age=3600';
@@ -170,39 +199,4 @@ function episodes_attributes_meta_box($post) {
       if ( ! empty($pages) ) {
           echo $pages;
       } // end empty pages check
-}
-
-
-
-function guess_404_permalink($someSlug) {
-	global $wpdb;
-	if ($someSlug) {
-		$where = $wpdb->prepare("post_name LIKE %s", $wpdb->esc_like($someSlug) . '%');
-
-		// if any of post_type, year, monthnum, or day are set, use them to refine the query
-		// if ( get_query_var('post_type') )
-		//         $where .= $wpdb->prepare(" AND post_type = %s", get_query_var('post_type'));
-		// else
-		//         $where .= " AND post_type IN ('" . implode( "', '", get_post_types( array( 'public' => true ) ) ) . "')";
-		//
-		// if ( get_query_var('year') )
-		//         $where .= $wpdb->prepare(" AND YEAR(post_date) = %d", get_query_var('year'));
-		// if ( get_query_var('monthnum') )
-		//         $where .= $wpdb->prepare(" AND MONTH(post_date) = %d", get_query_var('monthnum'));
-		// if ( get_query_var('day') )
-		//         $where .= $wpdb->prepare(" AND DAYOFMONTH(post_date) = %d", get_query_var('day'));
-
-		$post_id = $wpdb->get_var("SELECT ID FROM $wpdb->posts WHERE $where AND post_status = 'publish'");
-		if (!$post_id)
-			return false;
-		// if ( get_query_var( 'feed' ) )
-		//         return get_post_comments_feed_link( $post_id, get_query_var( 'feed' ) );
-		// elseif ( get_query_var( 'page' ) && 1 < get_query_var( 'page' ) )
-		//         return trailingslashit( get_permalink( $post_id ) ) . user_trailingslashit( get_query_var( 'page' ), 'single_paged' );
-		else
-			// return get_permalink( $post_id );
-			return str_replace(home_url(), "", get_permalink($post_id)); // gives us a relative url!
-	}
-
-	return false;
 }

@@ -1,5 +1,5 @@
 import { all, call, delay, put, take, select, takeLatest } from 'redux-saga/effects';
-import { actionTypes, generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure } from './actions';
+import { actionTypes, generalContentLoadTrigger, generalContentLoadStarted, generalContentLoadSuccess, generalContentLoadFailure, generalContentLoadNotFound } from './actions';
 import { makeSelectCurrentContentInstanceID, makeSelectContentLoading, makeSelectNextContentInstanceIDBeingLoaded } from 'selectors';
 import { APICALLURL_GETFIRSTDATEDPOST, APICALLURL_GETGENERALCONTENT } from './constants';
 
@@ -11,13 +11,14 @@ function* detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(route) {
   // remember it is the content authority that determines what kind oof thing we are dealing with here.
   console.log('detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis', route);
   const slugs = typeof route.slug !== 'undefined' ? route.slug : [];
+  const permalink = slugs.join('/');
   // the name of the function sort of says it all.
   // this will return the requestURL and the typeOfThing that has been determined by anaylysis of the permalink
   // returns { requestURL, typeOfTHing }
   // and then typeOfThing will determine what components to use to render the results
   if (slugs.length === 0) {
     // then we have the home page.
-    return { expectedContentType: 'home', requestURL: APICALLURL_GETGENERALCONTENT }; 
+    return { expectedContentType: 'home', requestURL: APICALLURL_GETGENERALCONTENT, permalink };
   } else if ([1,2,3].includes(slugs.length ) ) {
     console.log('this would be a special page, or an archive (a category or a tag)');// 
     // do we want to do the determiniation here? since we will have to do the same determiniation, on clinet side. better to abstract out into a reusable function. 
@@ -30,14 +31,14 @@ function* detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(route) {
     // 
     
     if (slugs[0] === 'tag') {
-      return { expectedContentType: 'tag', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`}; 
+      return { expectedContentType: 'tag', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`, permalink};
     }
     
-    return { expectedContentType: 'category', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`};
+    return { expectedContentType: 'category', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`, permalink};
     // 
   } else if ([5,6,7].includes(slugs.length)) {
     console.log('this looks like a single dated post');
-    return { expectedContentType: 'post', requestURL: APICALLURL_GETFIRSTDATEDPOST };
+    return { expectedContentType: 'post', requestURL: `${APICALLURL_GETGENERALCONTENT}/${slugs.join('/')}`, permalink };
   }
 }
 
@@ -47,9 +48,11 @@ function* detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis(route) {
 
 export function* loadGeneralContentSaga(action) {
   console.log('loadGeneralContentSaga()', action);
-  const route = action.route;
-  console.log('route', route);
   
+  const route = action.route;
+  // console.log('route', route);
+  
+  // const permalink = typeof action.route.slug === 'object' ? action.route.slug.join('/') : '';
 
   // what is the current content context?
   const currentContentID = yield select(makeSelectCurrentContentInstanceID());
@@ -57,8 +60,10 @@ export function* loadGeneralContentSaga(action) {
   // we want to check to see if we are already loading anything first. 
   // selector to indicate if we are loading a thing, and what thing.
 
-  const permalinkID = route.asPath;
-  console.log('permalinkID', permalinkID);
+  // const permalinkID = route.asPath;// for the home page, there will be no asPath
+
+  // console.log('permalink', permalink);
+
   const isLoading = yield select(makeSelectContentLoading());
   const whatIsBeingLoaded = yield select(makeSelectNextContentInstanceIDBeingLoaded());
   const thing = yield call(detetermineWhichApiEndpointToCallBasedOnPermalinkAnalysis, route);// expect: { expectedContentType, requestURL }
@@ -88,11 +93,17 @@ export function* loadGeneralContentSaga(action) {
     console.log('');
     if (!!thing.requestURL) {
       console.log('thing.requestURL', thing.requestURL);
-      yield put(generalContentLoadStarted(permalinkID));// this is the key
+      yield put(generalContentLoadStarted(thing.permalink));// this is the key
       try {
-        const caard = yield call(request, thing.requestURL);// caard with one d == content authority api response data
+        const caard = yield call(request, thing.requestURL);// caard with one d == content authority api response data. not the same as caardd with two Ds
         console.log('caard', caard);
-        yield put(generalContentLoadSuccess(caard));
+        if (!!caard.notFound) {
+          console.log('!!caard.notFound');
+          yield put(generalContentLoadNotFound(caard));
+        } else {
+          yield put(generalContentLoadSuccess(caard));
+        }
+        
 
       } catch (e) {
         console.log('generalContentLoadFailure :(', e);

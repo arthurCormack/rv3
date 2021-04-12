@@ -14,6 +14,7 @@ export const actionTypes = {
   GENERAL_CONTENT_LOAD_STARTED: 'GENERAL_CONTENT_LOAD_STARTED',
   GENERAL_CONTENT_LOAD_SUCCESS: 'GENERAL_CONTENT_LOAD_SUCCESS',
   GENERAL_CONTENT_LOAD_FAILURE: 'GENERAL_CONTENT_LOAD_FAILURE',
+  GENERAL_CONTENT_LOAD_NOTFOUND: 'GENERAL_CONTENT_LOAD_NOTFOUND',
 
   POSTSTACK_LOADNEXTPOST_TRIGGER: 'POSTSTACK_LOADNEXTPOST_TRIGGER',
   POSTSTACK_LOADNEXTPOST_STARTED: 'POSTSTACK_LOADNEXTPOST_STARTED',
@@ -84,9 +85,10 @@ export function generalContentLoadTrigger(route) {
     route
   }
 }
-export function generalContentLoadStarted() {
+export function generalContentLoadStarted(route) {
   return {
     type: actionTypes.GENERAL_CONTENT_LOAD_STARTED,
+    route,
   }
 }
 export function generalContentLoadSuccess(data) {
@@ -99,5 +101,12 @@ export function generalContentLoadFailure(error) {
   return {
     type: actionTypes.GENERAL_CONTENT_LOAD_FAILURE,
     error,
+  }
+}
+
+export function generalContentLoadNotFound(caard) {
+  return {
+    type: actionTypes.GENERAL_CONTENT_LOAD_NOTFOUND,
+    caard,
   }
 }

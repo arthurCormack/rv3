@@ -144,7 +144,9 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
   // store = stuff.store;
   console.log('getServerSideProps()');
   // console.log(stuff);
-  // console.log('query', query);
+  // console.log('req.url', req.url);
+  console.log('query', query);
+
   // can we determine what to do attempt to do here, based solely on the number of items in query.slug array?
   // 1, 2 or 3 items is an archive
   // 5, 6 or 7 items is a single dated post
@@ -183,7 +185,17 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
   }
 
   await store.sagaTask.toPromise();
-  console.log('after the await');
+  // what happens if we get a notFound? we check to see if we also got a redirectLocation, and if so, then we redirect to there.
+  // console.log('after the await');
+  const contents = store.getState().contents;
+  // console.log('contents', contents);
+  if (!!contents.notFound && !!contents.redirectLocation) {
+    console.log('trying to redirect...');
+    res.setHeader('Location', contents.redirectLocation);
+    res.statusCode = 302;
+    res.end();
+  }
+  
 });
 
 export default AllRoutes
