@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { useRouter } from 'next/router';
+
+import { initializeStore } from '../store';
 // import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 import { contentsReducer as reducer} from '../reducers';
 // import { generalContentSaga as saga} from "../sagas";
@@ -138,14 +140,21 @@ ddevup
 // }
 
 
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req, res, query }) => {
+// export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req, res, query }) => {
+  export const getServerSideProps = async ({req, res, query }) => {
+  // the wrapper gives is thee state! without it, we aren't getting the state passed in!
+  // export const getServerSideProps = async (stuff) => {
+  
+  // const store = useStore();
+  // console.log('store:', store);
+  const store = initializeStore();
+  console.log('getServerSideProps', store);
+  // return false;
   // store.dispatch(tickClock(false))
   // but ... do we have access to the router in getServerSideProps?
   // store = stuff.store;
-  console.log('getServerSideProps()');
-  // console.log(stuff);
-  // console.log('req.url', req.url);
-  console.log('query', query);
+
+  // console.log('query', query);
 
   // can we determine what to do attempt to do here, based solely on the number of items in query.slug array?
   // 1, 2 or 3 items is an archive
@@ -186,8 +195,8 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
 
   await store.sagaTask.toPromise();
   // what happens if we get a notFound? we check to see if we also got a redirectLocation, and if so, then we redirect to there.
-  console.log('after the await');
-  console.log('store.getState()()', store.getState()());
+  // console.log('after the await');
+  // console.log('store.getState()()', store.getState()());
   const contents = store.getState().contents;
   console.log('contents', contents);
   if (!!contents.notFound && !!contents.redirectLocation) {
@@ -196,7 +205,8 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
     res.statusCode = 302;
     res.end();
   }
-  
-});
+
+  return { props: { initialReduxState: store.getState() } }
+};
 
 export default AllRoutes

@@ -43,7 +43,7 @@ export function contentsReducer(state = initialContentsState, action) {
       //   }
       //   break;
       // } 
-      const actualPermalinkOfContentFromCA = action.data.resultItem.id;// expected data shape: { resultItem: { permalink: ~ }, ads, nextItem } ... this always needs to be the case. The API must respond with that stuff always.
+      const actualPermalinkOfContentFromCA = action.data.permalink;// expected data shape: { resultItem: { permalink: ~ }, ads, nextItem } ... this always needs to be the case. The API must respond with that stuff always.
       let someContentInstances = state.contentInstances;
       someContentInstances[actualPermalinkOfContentFromCA] = action.data.resultItem;// uses the permalink of the item as the key in the array. We know that this will be unique for each item of content.
       return {
