@@ -1,59 +1,37 @@
 import { useMemo } from 'react'
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import { createInjectorsEnhancer, forceReducerReload } from 'redux-injectors';
-// import thunkMiddleware from 'redux-thunk'
+import thunkMiddleware from 'redux-thunk'
 import createSagaMiddleware from 'redux-saga';
-import { createWrapper } from 'next-redux-wrapper'
-import rootSaga from './rootSaga';
 // import reducers from './reducers'
-import createReducer from './rootReducer';
+import rootSaga from './rootSaga';
+import rootReducer from './rootReducer';
 
-let store
+const bindMiddleware = (middleware) => {
+  if (process.env.NODE_ENV !== 'production') {
+    const { composeWithDevTools } = require('redux-devtools-extension')
+    return composeWithDevTools(applyMiddleware(...middleware))
+  }
+  return applyMiddleware(...middleware)
+}
+
+let store;
 
 function initStore(initialState) {
-  // console.log('initStore', initialState);
+  const sagaMiddleware = createSagaMiddleware();
+  const middleWarez = [thunkMiddleware, sagaMiddleware];
 
-
-  let composeEnhancers = compose;
-  const reduxSagaMonitorOptions = {};
-
-  const sagaMiddleware = createSagaMiddleware(reduxSagaMonitorOptions);
-  const { run: runSaga } = sagaMiddleware;
-  const middlewarez = [sagaMiddleware];
-
-
-  const enhancers = [
-    applyMiddleware(...middlewarez),
-    createInjectorsEnhancer({
-      createReducer,
-      runSaga,
-    }),
-  ];
-
-  store = createStore(
-    createReducer(),
+  const store = createStore(
+    rootReducer,
     initialState,
-    // composeWithDevTools(applyMiddleware(...middlewarez))
-    composeWithDevTools(composeEnhancers(...enhancers)),
+    bindMiddleware(middleWarez)
   );
-  // Extensions
-  store.runSaga = sagaMiddleware.run;
-
   store.sagaTask = sagaMiddleware.run(rootSaga);
 
-  // store.injectedReducers = {}; // Reducer registry
-  // store.injectedSagas = {}; // Saga registry
   return store;
-  // return createStore(
-  //   reducers,
-  //   initialState,
-  //   composeWithDevTools(applyMiddleware(...middlewarez))
-  // )
 }
 
 export const initializeStore = (preloadedState) => {
-  // console.log('initializeStore');
   let _store = store ?? initStore(preloadedState)
 
   // After navigating to a page with an initial Redux state, merge that state
@@ -79,5 +57,3 @@ export function useStore(initialState) {
   const store = useMemo(() => initializeStore(initialState), [initialState])
   return store
 }
-
-export const wrapper = createWrapper(initializeStore, { debug: true })

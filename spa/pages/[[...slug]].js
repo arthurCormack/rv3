@@ -186,9 +186,10 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, req
 
   await store.sagaTask.toPromise();
   // what happens if we get a notFound? we check to see if we also got a redirectLocation, and if so, then we redirect to there.
-  // console.log('after the await');
+  console.log('after the await');
+  console.log('store.getState()()', store.getState()());
   const contents = store.getState().contents;
-  // console.log('contents', contents);
+  console.log('contents', contents);
   if (!!contents.notFound && !!contents.redirectLocation) {
     console.log('trying to redirect...');
     res.setHeader('Location', contents.redirectLocation);

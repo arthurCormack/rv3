@@ -1,8 +1,8 @@
-export const actionTypes = { 
-  TICK: 'TICK', 
-  INCREMENT: 'INCREMENT', 
-  DECREMENT: 'DECREMENT', 
-  RESET: 'RESET', 
+export const actionTypes = {
+  TICK: 'TICK',
+  INCREMENT: 'INCREMENT',
+  DECREMENT: 'DECREMENT',
+  RESET: 'RESET',
   SIMPLE_TEST: 'SIMPLE_TEST',
 
   PAGE_LOAD_TRIGGER: 'PAGE_LOAD_TRIGGER',

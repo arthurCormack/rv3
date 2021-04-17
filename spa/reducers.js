@@ -3,9 +3,9 @@ import { actionTypes } from './actions';
 
 export const initialContentsState = {
   loading: false,
-  nextContentInstanceIDBeingLoaded: false, 
-  error: false, 
-  transitionState: null, 
+  nextContentInstanceIDBeingLoaded: false,
+  error: false,
+  transitionState: null,
   currentContentInstanceID: false,// false, if there is no currentContentInstanceID, and then a string (item's permalink)
   contentInstances: {},// { loadStartTime, loadCompleteTime, ???}
 };
@@ -19,18 +19,18 @@ export const initialContentsState = {
 // so ... when we first call GENERAL_CONTENT_LOAD_STARTED, we need to know precisely what we are loading.
 // also, we need to distinguish between loading a route's content, and loading a widget's content.
 // they are different. 'loading' by itself and 'error' by itself are not specific ... we need to know what those pertain to
-export function contentsReducer (state = initialContentsState, action) {
+export function contentsReducer(state = initialContentsState, action) {
   switch (action.type) {
     // GENERAL_CONTENT_ pertains to content that loads for a specific permalink
     case actionTypes.GENERAL_CONTENT_LOAD_STARTED:
-       return {
+      return {
         ...state,
-         ...{ loading: true, error: false, routeBeingLoaded: action.route },// by storing permalinkOfRouteBeingLoaded, wwe can check that the content received in GENERAL_CONTENT_LOAD_SUCCESS matches what it was supposed to be
+        ...{ loading: true, error: false, routeBeingLoaded: action.route },// by storing permalinkOfRouteBeingLoaded, wwe can check that the content received in GENERAL_CONTENT_LOAD_SUCCESS matches what it was supposed to be
       };
 
       break;
     case actionTypes.GENERAL_CONTENT_LOAD_SUCCESS:
-      console.log('GENERAL_CONTENT_LOAD_SUCCESS', action.data);
+      console.log('GENERAL_CONTENT_LOAD_SUCCESS', action);
 
       // the structure of thee state that we put content into ... an associative array of contentInstances ...
       // is an essential concept. this allows for us to do things like transitionns back and forward. Swiping, like on TikTok through content.
@@ -43,12 +43,12 @@ export function contentsReducer (state = initialContentsState, action) {
       //   }
       //   break;
       // } 
-      const actualPermalinkOfContentFromCA = action.data.resultItem.permalink;// expected data shape: { resultItem: { permalink: ~ }, ads, nextItem } ... this always needs to be the case. The API must respond with that stuff always.
+      const actualPermalinkOfContentFromCA = action.data.resultItem.id;// expected data shape: { resultItem: { permalink: ~ }, ads, nextItem } ... this always needs to be the case. The API must respond with that stuff always.
       let someContentInstances = state.contentInstances;
-      someContentInstances[actualPermalinkOfContentFromCA] = action.data;// uses the permalink of the item as the key in the array. We know that this will be unique for each item of content.
+      someContentInstances[actualPermalinkOfContentFromCA] = action.data.resultItem;// uses the permalink of the item as the key in the array. We know that this will be unique for each item of content.
       return {
         ...state,
-        ...{ loading: false, error: false, contentInstances: someContentInstances },
+        ...{ loading: false, error: false, contentInstances: someContentInstances, currentContentInstanceID: actualPermalinkOfContentFromCA },
       };
       break;
     case actionTypes.GENERAL_CONTENT_LOAD_FAILURE:
